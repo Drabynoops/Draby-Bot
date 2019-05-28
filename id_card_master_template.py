@@ -41,7 +41,8 @@ async def on_message(message):
 @client.event
 async def on_member_join(member):
 	''' Create an id_card text channel whenever a member joins.'''
-	await create_id_card(member)
+	if not member.bot:
+		await create_id_card(member)
 
 ##########################################################################################
 ### BOT COMMANDS                                                                      ###
@@ -53,9 +54,12 @@ async def add_id_card(context, name, discriminator = None):
 	This command exists for times when the bot is offline or
 	there was an error.
 	'''
-	member_to_search = await find_member(name, discriminator)
-	if member_to_search:
-		await create_id_card(member_to_search)
+	if is_admin(context.author):
+		member_to_search = await find_member(name, discriminator)
+		if member_to_search:
+			await create_id_card(member_to_search)
+	else:
+		await context.send('Apologies, {0}. You lack the rights to use that command.'.format(context.author.name))
 		
 ##########################################################################################
 ### GENERIC/HELPER FUNCTIONS                                                           ###
@@ -127,6 +131,17 @@ async def create_id_card(member):
 		admin_chat = guild.get_channel(ADMIN_CHAT)
 		channel.send('Attention admins. Unable to create id-card for {0} due to duplicate name. Please resolve'.format(member.name))
 
+def is_admin(member):
+	admin_status = False
+	index = 0
+	member_roles = member.roles
+	
+	print(member.roles)
+	while not admin_status and index < len(member.roles):
+		if member_roles[index].id == ADMIN_ROLE:
+			admin_status = True
+		index += 1
+	return admin_status
 ##########################################################################################
 ### RUN THE BOT                                                                        ###
 ##########################################################################################
