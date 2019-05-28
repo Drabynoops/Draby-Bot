@@ -129,7 +129,7 @@ async def create_id_card(member):
 		await id_category.create_text_channel(channel_name, overwrites = overwrites)
 	else:
 		admin_chat = guild.get_channel(ADMIN_CHAT)
-		channel.send('Attention admins. Unable to create id-card for {0} due to duplicate name. Please resolve'.format(member.name))
+		admin_chat.send('Attention admins. Unable to create id-card for {0} due to duplicate name. Please resolve'.format(member.name))
 
 def is_admin(member):
 	admin_status = False
